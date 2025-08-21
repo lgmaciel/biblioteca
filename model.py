@@ -3,6 +3,7 @@ class Biblioteca:
     def __init__(self):
         self.livros = dict()
         self.leitores = dict()
+        self.emprestimos = list()
 
     def cadastrar_livro(self, cod, titulo):
         livro = Livro()
@@ -12,18 +13,44 @@ class Biblioteca:
         self.livros[livro.cod] = livro
 
     def consultar_livro(self, cod):
-        return self.livros[cod]
+        try:
+            return self.livros[cod]
+        except KeyError:
+            return False
     
     def excluir_livro(self, cod):
-        del self.livros[cod]
+        try:
+            del self.livros[cod]        
+            return True
+        except KeyError:
+            return False
+    
+    def atualizar_livro(self, cod, titulo):
+        # caso o código tenha mudado
+        self.excluir_livro(cod)
+        self.cadastrar_livro(cod, titulo)
 
+    # FAZER: completar CRUD  do Leitor
+    # Em Biblioteca:    
+    # - consultar_leito(cpf)
+    # - excluir_leitor(cpf)
+    # - atualizar_leitor(cpf, )
+    #
+    # Em Leitor:
+    # - adicionar propriedade 'cpf'
+    # - adicionar propriedade 'nome'
+    # - adicionar setters/getters conforme necessidade
+    #
     def cadastrar_leitor(self, leitor):
         self.leitores[leitor.cpf] = leitor
 
     def emprestar(self, livro, leitor):
         data_de_devolucao = self.calcular_data_devolucao()
         livro.set_emprestado()
-        return Emprestimo(livro, leitor, data_de_devolucao)
+
+        novo_emprestimo = Emprestimo(livro, leitor, data_de_devolucao)
+        self.emprestimos.append(novo_emprestimo)
+        return novo_emprestimo
         
 
     def calcular_data_devolucao(self):
@@ -33,7 +60,6 @@ class Biblioteca:
         # somamos 1 semana à data de emprestimo
         return hoje + tempo_de_emprestimo
         
-
 class Livro:
     def __init__(self):
         self.emprestado = False
@@ -44,7 +70,6 @@ class Livro:
         self.cod = cod
     def set_emprestado(self):
         self.emprestado = True
-    
 
 class Leitor:
     def __init__(self):
@@ -60,3 +85,6 @@ class Emprestimo:
         self.leitor = leitor
         self.data_devolucao = data_devolucao
 
+# Inicializar biblioteca / conectar à model da biblioteca
+
+biblioteca = Biblioteca()
